@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>{{t.title}}</h2><p class="mut">Hi {{intern.name}} · Deadline {{t.deadline}}</p><p>{{t.description}}</p>
+<b>Requirements</b><ul>{% for r in t.requirements.splitlines() if r.strip() %}<li>{{r}}</li>{% endfor %}</ul></div>
+{% if t.status=='assigned' %}
+<div class="card"><h3>Submit your completed work</h3>
+<form method="post" enctype="multipart/form-data"><textarea name="submission" rows="10" placeholder="Paste code / explain what you built / GitHub link"></textarea>
+<input type="file" name="file"><button>Mark complete &amp; get review slot</button></form></div>
+{% else %}<div class="card">✅ Submitted. Status: <b>{{t.status}}</b><br>Review: <b>{{t.review_dt}}</b><br>Meet: <a href="{{t.meet_link}}">{{t.meet_link}}</a><br><br>
+<a class="btn" href="/review/{{t.token}}">Open AI Review Room</a></div>{% endif %}{% endblock %}

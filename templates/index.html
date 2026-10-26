@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block body %}
+<div class="grid">
+ <div class="card"><div class="stat">{{stats.interns}}</div><small>Interns</small></div>
+ <div class="card"><div class="stat">{{stats.assigned}}</div><small>Tasks in progress</small></div>
+ <div class="card"><div class="stat">{{stats.review_scheduled}}</div><small>Reviews scheduled</small></div>
+ <div class="card"><div class="stat">{{stats.reviewed}}</div><small>Reviewed</small></div>
+</div>
+<div class="grid">
+ <div class="card"><h3>1️⃣ Upload interns Excel</h3><a href="/template/interns">Download template</a>
+  <form method="post" action="/upload/interns" enctype="multipart/form-data"><input type="file" name="file" accept=".xlsx" required><button>Import</button></form></div>
+ <div class="card"><h3>2️⃣ Allocate tasks (Excel)</h3><a href="/template/tasks">Download template</a>
+  <form method="post" action="/upload/tasks" enctype="multipart/form-data"><input type="file" name="file" accept=".xlsx" required><button>Allocate &amp; send mails</button></form></div>
+ <div class="card"><h3>Allocate one task</h3>
+  <form method="post" action="/allocate"><input name="email" placeholder="intern email  (or: all)" required><input name="title" placeholder="Task title" required>
+  <textarea name="description" placeholder="Description" required></textarea><textarea name="requirements" placeholder="Requirements (one per line)" required></textarea>
+  <input name="deadline" type="date" required><button>Allocate</button></form></div>
+</div>
+<div class="card"><h3>Tasks</h3><div style="overflow-x:auto"><table>
+<tr><th>Intern</th><th>Email</th><th>Task</th><th>Status</th><th>Review slot</th><th>Links</th></tr>
+{% for t in tasks %}<tr><td>{{t.name}}</td><td>{{t.intern_email}}</td><td>{{t.title}}</td>
+<td><span class="tag {{t.status}}">{{t.status}}</span></td><td>{{t.review_dt or '-'}}</td>
+<td><a href="/submit/{{t.token}}">submit</a> · <a href="/review/{{t.token}}">review</a>{% if t.status=='reviewed' %} · <a href="/report/{{t.token}}">report</a>{% endif %}</td></tr>
+{% else %}<tr><td colspan=6 class="mut">No tasks yet.</td></tr>{% endfor %}</table></div></div>
+{% endblock %}

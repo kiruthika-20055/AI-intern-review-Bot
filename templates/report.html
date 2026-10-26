@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>📋 Review Report – {{t.title}}</h2><p class="mut">{{intern.name}} · {{intern.email}}</p>
+<div class="stat" style="color:{{ 'var(--ok)' if rep.score>=80 else 'var(--warn)' if rep.score>=40 else 'var(--bad)' }}">{{rep.score}}/100 – {{rep.verdict}}</div><p>{{rep.summary}}</p></div>
+<div class="grid">
+<div class="card"><h3>✅ Completed</h3><ul>{% for x in rep.covered %}<li>{{x}}</li>{% else %}<li>Nothing</li>{% endfor %}</ul></div>
+<div class="card"><h3>❌ Not done / Missing</h3><ul>{% for x in rep.missing %}<li>{{x}}</li>{% else %}<li>None 🎉</li>{% endfor %}</ul></div>
+<div class="card"><h3>⚠️ Mistakes</h3><ul>{% for x in rep.mistakes %}<li>{{x}}</li>{% else %}<li>None</li>{% endfor %}</ul></div>
+<div class="card"><h3>💡 How to improve</h3><ul>{% for x in rep.improvements %}<li>{{x}}</li>{% endfor %}</ul></div></div>
+<div class="card"><h3>Conversation</h3>{% for m in tr %}<p><b>{{'Bot' if m.role=='bot' else 'Intern'}}:</b> {{m.text}}</p>{% endfor %}</div>
+{% endblock %}

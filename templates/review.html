@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block body %}
+<div class="card"><h2>🎙 AI Review – {{t.title}}</h2><small>Intern: {{intern.name}} · Scheduled: {{t.review_dt or 'n/a'}} · Meet: <a href="{{t.meet_link}}" target="_blank">{{t.meet_link}}</a></small></div>
+<div class="card"><div id="chat" style="height:380px;overflow:auto;display:flex;flex-direction:column;gap:8px"></div>
+<textarea id="ans" rows="2" placeholder="Type your answer or press 🎤 to speak…"></textarea>
+<button id="send">Send</button> <button id="mic" type="button">🎤 Speak</button> <label><input type="checkbox" id="tts" checked style="width:auto"> Bot speaks</label>
+<button id="end" style="background:var(--ok);float:right">Finish &amp; get report</button></div>
+<script>
+const T="{{t.token}}",chat=document.getElementById('chat'),ans=document.getElementById('ans');
+function add(who,text){const d=document.createElement('div');d.style.cssText='padding:10px 14px;border-radius:12px;max-width:80%;'+(who=='bot'?'background:#4f46e533;align-self:flex-start':'background:#16a34a33;align-self:flex-end');d.textContent=text;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
+ if(who=='bot'&&document.getElementById('tts').checked&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(text));}}
+async function turn(text){const r=await fetch(`/api/review/${T}/message`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+ const j=await r.json(); if(j.question)add('bot',j.question); else add('bot','Thanks! That is all I need. Click "Finish & get report".');}
+document.getElementById('send').onclick=()=>{const v=ans.value.trim();if(!v)return;add('intern',v);ans.value='';turn(v)};
+ans.addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('send').click()}});
+document.getElementById('end').onclick=async()=>{add('bot','Analysing your task vs requirements…');const r=await fetch(`/api/review/${T}/finish`,{method:'POST'});location=(await r.json()).url};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+document.getElementById('mic').onclick=()=>{if(!SR)return alert('Use Chrome/Edge for voice');const s=new SR();s.lang='en-IN';s.onresult=e=>{ans.value=e.results[0][0].transcript};s.start()};
+turn('');
+</script>{% endblock %}
